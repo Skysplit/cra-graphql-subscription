@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { useCreateTodo } from "./hooks/useCreateTodo";
 import { useTodoList } from "./hooks/useTodoList";
-import { useUpdateTodo } from "./hooks/useUpdateTodo";
 import { Todo } from "./Todo";
+import { useOnline } from "./hooks/useOnline";
 
 export function TodoList() {
   const [text, setText] = useState("");
+  const { isOffline } = useOnline();
   const { createTodo } = useCreateTodo();
   const { loading, data } = useTodoList();
 
@@ -22,6 +23,11 @@ export function TodoList() {
           variables: {
             text,
           },
+          optimisticResponse: {
+            id: Date.now(),
+            completed: false,
+            text,
+          },
         });
 
         setText("");
@@ -29,16 +35,19 @@ export function TodoList() {
     >
       <ul>
         {data.todoList.map((todo) => (
-          <Todo key={todo.id} todo={todo} />
+          <Todo key={todo.id} todo={todo} isOffline={isOffline} />
         ))}
       </ul>
       <input
         value={text}
+        disabled={isOffline}
         onChange={(event) => setText(event.target.value)}
         type="text"
         name="text"
       />
-      <button type="submit">Add</button>
+      <button type="submit" disabled={isOffline}>
+        Add
+      </button>
     </form>
   );
 }
