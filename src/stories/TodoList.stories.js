@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { storiesOf } from "@storybook/react";
+import { withConsole } from "@storybook/addon-console";
 import { ApolloProvider } from "@apollo/client";
 import { createClient } from "../createClient";
 import { TodoList } from "../TodoList";
@@ -8,6 +9,7 @@ import { Todo } from "../Todo";
 const client = createClient();
 
 storiesOf("TodoList", module)
+  .addDecorator((storyFn, context) => withConsole()(storyFn)(context))
   .add("list", () => (
     <ApolloProvider client={client}>
       <TodoList />
